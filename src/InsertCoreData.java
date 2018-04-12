@@ -10,12 +10,13 @@ import org.jsoup.select.*;
 
 import java.sql.* ;  // for standard JDBC programs
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.math.* ; // for BigDecimal and BigInteger support
 
 
 
 
-public class InsertProcedure {
+public class InsertCoreData {
 	
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
@@ -32,6 +33,26 @@ public class InsertProcedure {
 	
 
  	
+ 	/*
+ 	 * PARSE METHOD
+ 	 */
+ 	private static String[] parse(String input) {
+
+ 		String[] parts = input.split("@");
+        String name = parts[0].replace(".", " ").toLowerCase();
+        String[] nameParts = name.split(" ");
+        
+        
+        if(nameParts.length == 1) {
+        	String[] namePartsTemp = new String[2];
+        	namePartsTemp[0] = nameParts[0];
+        	namePartsTemp[1] = ""; 
+	    
+	        return namePartsTemp;      
+        }
+
+        return nameParts;
+    }
  	
  	
  	
@@ -74,33 +95,54 @@ public class InsertProcedure {
 	        	
 	        	for (int i = 0; i < PERSON_ARCHIVES.length; i++) {
 	        		
+	        		// sql variables
+		            ArrayList<String> urls = new ArrayList<>();
+		            ArrayList<String> emails = new ArrayList<>();
+		            ArrayList<String> firstnames = new ArrayList<>();
+		            ArrayList<String> lastnames = new ArrayList<>();
 	        		
 	        		// Persons
 		            Document persArchive = Jsoup.connect(PERSON_ARCHIVES[i]).get(); 
-		            Elements pers = persArchive.select("div.kurzprofil div a");
 		            
-		            String firstname = "";
-		            String lastname = "";
-		            String email = "";
-		            String url = "";
+		            Elements persUrl = persArchive.select("div.kurzprofil div a.marron_k");
+		            Elements persEmail = persArchive.select("div.kurzprofil div a:not(.marron_k)");
 		            
-		            
-		            
-		            
-		            for (Element persData : pers) {
-		                if (persData.text().contains("@htwsaar")) { 
-		                    email = persData.text().toLowerCase();
-		                    System.out.println(email);
-		                    
-		                    String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstname + "', '" + lastname + "', '" + email + "', '" + url + "')";
-		        	        stmt.executeUpdate(sql);
 
-		        	        System.out.println("Inserted records into the table...\n");
-		        	        count ++;
-		                }
-		                
-		                
+		       
+		            
+		            // get all urls
+		            for (Element url : persUrl) {
+		                if (url.absUrl("href").contains("https")) { 
+		                    urls.add(url.absUrl("href").toLowerCase());
+		                }   
 		            }
+		            
+		            
+		            // get all emails + names
+		            for (Element email : persEmail) {
+		                if (email.text().contains("@htwsaar")) { 
+		                    emails.add(email.text().toLowerCase());
+		                    
+		                    String[] name = parse(email.text());
+		                    
+		                    firstnames.add(name[0]);
+		                    lastnames.add(name[1]);
+		                    
+		                }   
+		            }
+		            
+		            
+		            
+		            for (int j = 0; j < urls.size(); j++) {
+		            	String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '" + lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "')";
+	        	        stmt.executeUpdate(sql);
+	        	        count ++;
+		            }
+		            
+		            
+		            
+		            
+		            
 	        		
 	        		
 	        	}
