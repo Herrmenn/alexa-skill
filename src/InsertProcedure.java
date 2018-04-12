@@ -68,7 +68,7 @@ public class InsertProcedure {
 
 	        
 	        
-	        // GET PERSONS FROM WEBSITE
+	        // GET PERSONS FROM WEBSITEE
 	        try {
 	        	
 	        	
