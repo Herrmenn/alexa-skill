@@ -97,7 +97,6 @@ public class InsertProcedure {
 
 		        	        System.out.println("Inserted records into the table...\n");
 		        	        count ++;
-		        	        //dawdw
 		                }
 		                
 		                
