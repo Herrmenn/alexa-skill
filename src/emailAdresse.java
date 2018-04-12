@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.*;
 import org.jsoup.nodes.*;
@@ -9,11 +7,14 @@ import org.jsoup.select.*;
 public class emailAdresse {
 	
 	
-	public static void parse(String input) {
+	public static String[] parse(String input) {
 		
 		String [] parts = input.split("@");
 		String part1 = parts[0];
-	   System.out.println(part1.replace('.', ' ').toLowerCase());
+	    String name = part1.replace('.', ' ').toLowerCase();
+	    String [] part2 = name.split(" ");
+	    
+	    return part2;
 	}
 	
 	     public static void main(String[] args) {        
@@ -24,7 +25,8 @@ public class emailAdresse {
 	                for (Element headline : newsHeadlines) {
 	                      if (headline.text().contains("@htwsaar")) {
 	                    	  System.out.println(headline.text());
-	     	                       parse(headline.text());
+	     	                      String [] arr = parse(headline.text());
+	     	                      System.out.println(arr[0] + " " + arr[1]);
 	                    }
 	                }
 	            } catch (IOException e) {
