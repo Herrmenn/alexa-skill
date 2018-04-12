@@ -16,6 +16,12 @@ import java.math.* ; // for BigDecimal and BigInteger support
 
 
 
+/**
+ * 
+ * @author Herrmann, Morlo
+ * Uebernimmt Vorname, Nachname, E-Mail, URL eines Angestellten in die Datenbank
+ *
+ */
 public class InsertCoreData {
 	
 	// JDBC driver name and database URL
@@ -54,11 +60,6 @@ public class InsertCoreData {
         return nameParts;
     }
  	
- 	
- 	
- 	
-	
-	
 	
  	/*
  	 * MAIN METHOD
@@ -139,26 +140,13 @@ public class InsertCoreData {
 	        	        count ++;
 		            }
 		            
-		            
-		            
-		            
-		            
-	        		
-	        		
+
 	        	}
 	            
 	            
 	        } catch (IOException e) {
 	            System.out.println(e);
 	        }
-	        
-	        
-	        
-	        
-	        
-	        
-	        
-	        
 	    	
 	    } 
 	    catch(SQLException se) {
