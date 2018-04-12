@@ -16,7 +16,7 @@ import java.math.*; // for BigDecimal and BigInteger support
 /**
  * 
  * @author Herrmann, Morlo Uebernimmt Vorname, Nachname, E-Mail, URL aller
- *         Angestellten im Studienbereich Ingenieurwissenschaften in die
+ *         Angestellten im Studienbereich Ingenieurwissenschaften, Wirtschaftswissenschaften in die
  *         Datenbank
  *
  */
