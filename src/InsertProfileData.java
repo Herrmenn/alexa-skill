@@ -40,6 +40,8 @@ public class InsertProfileData {
 			
 			int count_select = 0;
 			int count_insert = 0;
+			int count_httperr = 0;
+			int id = 1;
 
 			
 			try {
@@ -77,7 +79,7 @@ public class InsertProfileData {
 				
 				
 				
-				int id = 1;
+				
 				for (int i = 0; i < personUrls.size() ; i++) {
 					
 
@@ -88,23 +90,23 @@ public class InsertProfileData {
 
 						
 			            for (Element data : profile) {
-			            	
+			            	String office = "";
 			            	
 			                if (data.text().contains("Raum")) {
-			                	String office = data.text();
-			                    System.out.println(office);
-			                    
-			                    String sql_insert = "UPDATE pers_core_data SET office='" + office + "' WHERE id ='" + id + "'";
+			                	office = data.text();
+			                	System.out.println(office);
+			                	
+			                	String sql_insert = "UPDATE pers_core_data SET office='" + office + "' WHERE id ='" + id + "'";
 								stmt.executeUpdate(sql_insert);
 								count_insert++;
-								
 			                }
-			                ;
+  
 			            }
 	            	}
 	            	catch (HttpStatusException ht) {
 	            		id++;
-	            		System.out.println("404");
+	            		count_httperr++;
+	            		System.out.print("HTTP ERROR 404: " + personUrls.get(i) + "\n");
 	            		continue;
 	            	}
 					
@@ -137,7 +139,13 @@ public class InsertProfileData {
 					se.printStackTrace();
 				} // end finally try
 			} // end try
-			System.out.println("\n\nConnection closed.\n" + count_insert + " entries have been selected\n" + count_insert + " entries have been inserted");
+			System.out.println("\n\nConnection closed.\n" 
+			+ count_insert + " entries have been selected\n" 
+			+ count_insert + " entries have been inserted\n" 
+			+ "-------------------------------\n"
+			+ (id-1) + " core data entries\n"
+			+ count_httperr + " urls not found (404)\n" 
+			+ (id-count_insert-count_httperr) + " profiles without an office");
 
 		} // main
 
