@@ -29,7 +29,6 @@ public class InsertProfileData {
 		static int count_insert = 0;
 
 
-
 		/*
 		 * MAIN METHOD
 		 */
@@ -54,8 +53,6 @@ public class InsertProfileData {
 				conn = DriverManager.getConnection(DB_URL, USER, PASS);
 				System.out.println("Connected database successfully...");
 
-				
-				
 				// Person Profile Urls
 				ArrayList<String> personUrls = new ArrayList<>();
 
@@ -76,19 +73,13 @@ public class InsertProfileData {
 				}
 				rs.close();
 				
-				
-				
-				
-				
-				for (int i = 0; i < personUrls.size() ; i++) {
-					
 
+				for (int i = 0; i < personUrls.size() ; i++) {		
 		            try {
 		            	// Persons
 						Document persProfile = Jsoup.connect(personUrls.get(i)).get();
 						Elements profile = persProfile.select("div.kontakt-table div");
-
-						
+	
 			            for (Element data : profile) {
 			            	String office = "";
 			            	
@@ -100,7 +91,6 @@ public class InsertProfileData {
 								stmt.executeUpdate(sql_insert);
 								count_insert++;
 			                }
-  
 			            }
 	            	}
 	            	catch (HttpStatusException ht) {
@@ -113,12 +103,6 @@ public class InsertProfileData {
 		            id++;
 				}
 				
-				
-			      
-			      
-				
-				
-			
 			} catch (SQLException se) {
 				// Handle errors for JDBC
 				se.printStackTrace();
@@ -139,13 +123,14 @@ public class InsertProfileData {
 					se.printStackTrace();
 				} // end finally try
 			} // end try
+			
 			System.out.println("\n\nConnection closed.\n" 
 			+ count_insert + " entries have been selected\n" 
 			+ count_insert + " entries have been inserted\n" 
 			+ "-------------------------------\n"
-			+ (id-1) + " core data entries\n"
+			+ (id - 1) + " core data entries\n"
 			+ count_httperr + " urls not found (404)\n" 
-			+ (id-count_insert-count_httperr) + " profiles without an office");
+			+ (id - count_insert - count_httperr) + " profiles without an office");
 
 		} // main
 
