@@ -28,7 +28,7 @@ public class InsertCoreData {
 
 	// Database credentials
 	static final String USER = "root";
-	static final String PASS = "root";
+	static final String PASS = "";
 
 	// Person Archive
 	static final String[] PERSON_ARCHIVES =   { "https://www.htwsaar.de/ingwi/fakultaet/personen/personen-a-g",
@@ -128,7 +128,7 @@ public class InsertCoreData {
 					System.out.println(emails.size() + " Emails - " + urls.size() + " Urls");
 
 					for (int j = 0; j < urls.size(); j++) {
-						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL')";
+						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL', 'NULL')";
 						stmt.executeUpdate(sql);
 						count++;
 					}

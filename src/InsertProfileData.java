@@ -23,7 +23,7 @@ public class InsertProfileData {
 
 		// Database credentials
 		static final String USER = "root";
-		static final String PASS = "root";
+		static final String PASS = "";
 		
 		static int count_select = 0;
 		static int count_insert = 0;
@@ -37,8 +37,8 @@ public class InsertProfileData {
 			Connection conn = null;
 			Statement stmt = null;
 			
-			int count_select = 0;
-			int count_insert = 0;
+			int count_insert_office = 0;
+			int count_insert_phone = 0;
 			int count_httperr = 0;
 			int id = 1;
 
@@ -67,7 +67,6 @@ public class InsertProfileData {
 				while(rs.next()){
 					String url = rs.getString("url");
 					personUrls.add(url);
-					System.out.println("\nUrl: " + url);
 					
 					count_select++;
 				}
@@ -82,14 +81,25 @@ public class InsertProfileData {
 	
 			            for (Element data : profile) {
 			            	String office = "";
+			            	String phone = "";
 			            	
+			            	//einfuegen Raumnummer
 			                if (data.text().contains("Raum")) {
 			                	office = data.text();
 			                	System.out.println(office);
 			                	
 			                	String sql_insert = "UPDATE pers_core_data SET office='" + office + "' WHERE id ='" + id + "'";
 								stmt.executeUpdate(sql_insert);
-								count_insert++;
+								count_insert_office++;
+			                }
+			                //einfuegen Telefonnummer
+			                else if (data.text().contains("t +")) {
+			                	phone = data.text();
+			                	System.out.println(phone);
+			                	
+			                	String sql_insert = "UPDATE pers_core_data SET phone='" + phone + "' WHERE id ='" + id + "'";
+								stmt.executeUpdate(sql_insert);
+								count_insert_phone++;
 			                }
 			            }
 	            	}
@@ -99,7 +109,6 @@ public class InsertProfileData {
 	            		System.out.print("HTTP ERROR 404: " + personUrls.get(i) + "\n");
 	            		continue;
 	            	}
-					
 		            id++;
 				}
 				
@@ -125,13 +134,13 @@ public class InsertProfileData {
 			} // end try
 			
 			System.out.println("\n\nConnection closed.\n" 
-			+ count_insert + " entries have been selected\n" 
-			+ count_insert + " entries have been inserted\n" 
+			+ count_insert_office + " office numbers have been selected and inserted\n" 
+			+ count_insert_phone  + " phone numbers have been selected and inserted\n" 
 			+ "-------------------------------\n"
 			+ (id - 1) + " core data entries\n"
-			+ count_httperr + " urls not found (404)\n" 
-			+ (id - count_insert - count_httperr) + " profiles without an office");
-
+			+ count_httperr + " urls not found (404)\n"
+			+  (id -1 - count_insert_office-count_httperr)+ " room numbers not available\n"
+			+  (id -1 - count_insert_phone-count_httperr)+ " phone numbers not available");
 		} // main
 
 } // class
