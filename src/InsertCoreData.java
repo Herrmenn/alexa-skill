@@ -28,7 +28,7 @@ public class InsertCoreData {
 
 	// Database credentials
 	static final String USER = "root";
-	static final String PASS = "";
+	static final String PASS = "root";
 
 	// Person Archive
 	static final String[] PERSON_ARCHIVES =   { "https://www.htwsaar.de/ingwi/fakultaet/personen/personen-a-g",
@@ -101,14 +101,17 @@ public class InsertCoreData {
 
 					// get all urls
 					for (Element url : persUrl) {
-						if (url.absUrl("href").contains("https")) {
+						if (url.absUrl("href").contains("http")) {
 							urls.add(url.absUrl("href").toLowerCase());
+						}
+						if (url.toString() == "") {
+							System.out.println("KEINE URL");
 						}
 					}
 
 					// get all emails + names
 					for (Element email : persEmail) {
-						if (email.text().contains("@htwsaar") || email.text().contains("@htw-saarland")) {
+						if (email.text().contains("@")) {
 							emails.add(email.text().toLowerCase());
 
 							String[] name = parse(email.text());
@@ -117,10 +120,15 @@ public class InsertCoreData {
 							lastnames.add(name[1]);
 
 						}
+						if (email.toString() == "") {
+							System.out.println("KEINE EMAIL");
+						}
 					}
+					
+					System.out.println(emails.size() + " Emails - " + urls.size() + " Urls");
 
 					for (int j = 0; j < urls.size(); j++) {
-						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "')";
+						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL')";
 						stmt.executeUpdate(sql);
 						count++;
 					}
