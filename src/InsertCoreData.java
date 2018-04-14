@@ -116,9 +116,13 @@ public class InsertCoreData {
 							urls.add(url.absUrl("href").toLowerCase());
 							//System.out.println("URL: "+url.absUrl("href").toLowerCase()+"\n");
 						}
-						if (url.toString() == "") {
-							System.out.println("KEINE URL");
+						else {
+							urls.add("KEINE URL VORHANDEN");
 						}
+						//System.out.println(url.toString()+"\n");
+						//if (url.toString() == "") {
+						//	System.out.println("KEINE URL");
+						//}
 					}
 
 					// get all emails + names
@@ -138,7 +142,7 @@ public class InsertCoreData {
 					
 					System.out.println(emails.size() + " Emails - " + urls.size() + " Urls");
 
-					for (int j = 0; j < urls.size(); j++) {
+					for (int j = 0; j < emails.size(); j++) {
 						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL', 'NULL')";
 						stmt.executeUpdate(sql);
 						count++;
