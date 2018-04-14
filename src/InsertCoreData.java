@@ -37,7 +37,10 @@ public class InsertCoreData {
 												"https://www.htwsaar.de/wiwi/fakultaet/personen/dozenten-a-g",
 												"https://www.htwsaar.de/wiwi/fakultaet/personen/dozenten-h-o",
 												"https://www.htwsaar.de/wiwi/fakultaet/personen/dozenten-p-z",
-												"https://www.htwsaar.de/wiwi/fakultaet/personen/mitarbeiter" };
+												"https://www.htwsaar.de/wiwi/fakultaet/personen/mitarbeiter", //bis hierhin fkt alles, e-mails fkt. bei sowi, URL´s jedoch nicht
+												"https://www.htwsaar.de/sowi/fakultaet/personen/index_2014.html", //div.linkToPerson a
+												"https://www.htwsaar.de/sowi/fakultaet/personen/professoren",
+												"https://www.htwsaar.de/sowi/fakultaet/personen/Wissenschaftliche-Mitarbeiterinnen-und-Mitarbeiter"};
 
 	/*
 	 * PARSE METHOD
@@ -92,35 +95,51 @@ public class InsertCoreData {
 					ArrayList<String> emails = new ArrayList<>();
 					ArrayList<String> firstnames = new ArrayList<>();
 					ArrayList<String> lastnames = new ArrayList<>();
+					Elements persEmail;
+					Elements persUrl;
 
 					// Persons
 					Document persArchive = Jsoup.connect(PERSON_ARCHIVES[i]).get();
 
-					Elements persUrl = persArchive.select("div.kurzprofil div a.marron_k");
-					Elements persEmail = persArchive.select("div.kurzprofil div a:not(.marron_k)");
-
+					if(PERSON_ARCHIVES[i].contains("sowi")) {
+						persEmail = persArchive.select("div.kontakt-table div a:not(.marron_u)");
+						persUrl = persArchive.select("div.linkToPerson a, a[href].external-link, a[href].internal-link");
+						//System.out.println("URL: "+persUrl+"\n");
+					}
+					else {
+					persEmail = persArchive.select("div.kurzprofil div a:not(.marron_k)");
+					persUrl = persArchive.select("div.kurzprofil div a.marron_k");
+					}
 					// get all urls
 					for (Element url : persUrl) {
-						if (url.absUrl("href").contains("https")) {
+						if (url.absUrl("href").contains("http")) {
 							urls.add(url.absUrl("href").toLowerCase());
+							//System.out.println("URL: "+url.absUrl("href").toLowerCase()+"\n");
+						}
+						if (url.toString() == "") {
+							System.out.println("KEINE URL");
 						}
 					}
 
 					// get all emails + names
 					for (Element email : persEmail) {
-						if (email.text().contains("@htwsaar") || email.text().contains("@htw-saarland")) {
+						if (email.text().contains("@")) {
 							emails.add(email.text().toLowerCase());
-
+							//System.out.println("EMAIL: "+email.text().toLowerCase()+"\n");
 							String[] name = parse(email.text());
-
+							
 							firstnames.add(name[0]);
 							lastnames.add(name[1]);
-
+						}
+						if (email.toString() == "") {
+							System.out.println("KEINE EMAIL");
 						}
 					}
+					
+					System.out.println(emails.size() + " Emails - " + urls.size() + " Urls");
 
 					for (int j = 0; j < urls.size(); j++) {
-						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "')";
+						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL', 'NULL')";
 						stmt.executeUpdate(sql);
 						count++;
 					}
