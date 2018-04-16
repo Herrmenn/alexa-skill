@@ -28,7 +28,7 @@ public class InsertCoreData {
 
 	// Database credentials
 	static final String USER = "root";
-	static final String PASS = "";
+	static final String PASS = "root";
 
 	// Person Archive
 	static final String[] PERSON_ARCHIVES =   { "https://www.htwsaar.de/ingwi/fakultaet/personen/personen-a-g",
@@ -63,6 +63,8 @@ public class InsertCoreData {
 	 * MAIN METHOD
 	 */
 	public static void main(String[] args) {
+		
+		long timeBefore = System.currentTimeMillis();
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -79,13 +81,15 @@ public class InsertCoreData {
 			System.out.println("Connected database successfully...");
 
 			// STEP 4: Execute a query
-			System.out.println("Inserting records into the table...");
+			System.out.println("Inserting records into the table...\n");
 			stmt = conn.createStatement();
 
 			// GET PERSONS FROM WEBSITE
 			try {
 
 				for (int i = 0; i < PERSON_ARCHIVES.length; i++) {
+					
+					long timeBeforePersons = System.currentTimeMillis();
 
 					// sql variables
 					ArrayList<String> urls = new ArrayList<>();
@@ -125,19 +129,27 @@ public class InsertCoreData {
 						}
 					}
 					
-					System.out.println(emails.size() + " Emails - " + urls.size() + " Urls");
+					// print needed time
+					long timeNeededPersons = (System.currentTimeMillis() - timeBeforePersons);
+					System.out.println("Time needed: " + timeNeededPersons + " ms - " + emails.size() + " Emails - " + urls.size() + " Urls (" + persArchive.title() + ")");
 
 					for (int j = 0; j < urls.size(); j++) {
 						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL', 'NULL')";
 						stmt.executeUpdate(sql);
 						count++;
 					}
-
+					
 				}
 
 			} catch (IOException e) {
 				System.out.println(e);
 			}
+			
+			
+			// print needed time
+			long timeNeeded = (System.currentTimeMillis() - timeBefore);
+			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms");
+			
 
 		} catch (SQLException se) {
 			// Handle errors for JDBC
@@ -159,7 +171,7 @@ public class InsertCoreData {
 				se.printStackTrace();
 			} // end finally try
 		} // end try
-		System.out.println("\n\nConnection closed.\n" + count + " entries have been inserted.");
+		System.out.println("Connection closed.\n" + count + " entries have been inserted.");
 
 	} // main
 
