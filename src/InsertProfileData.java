@@ -23,7 +23,7 @@ public class InsertProfileData {
 
 		// Database credentials
 		static final String USER = "root";
-		static final String PASS = "";
+		static final String PASS = "root";
 		
 		static int count_select = 0;
 		static int count_insert = 0;
@@ -36,6 +36,8 @@ public class InsertProfileData {
 
 			Connection conn = null;
 			Statement stmt = null;
+			
+			long timeBefore = System.currentTimeMillis();
 			
 			int count_insert_office = 0;
 			int count_insert_phone = 0;
@@ -77,11 +79,13 @@ public class InsertProfileData {
 		            try {
 		            	// Persons
 						Document persProfile = Jsoup.connect(personUrls.get(i)).get();
-						Elements profile = persProfile.select("div.kontakt-table div");
+						Elements persOffice = persProfile.select("div.kontakt-table div");
+						Elements persPhone = persProfile.select("div.kontakt-table div span");
+						
+						System.out.println("\n");
 	
-			            for (Element data : profile) {
+			            for (Element data : persOffice) {
 			            	String office = "";
-			            	String phone = "";
 			            	
 			            	//einfuegen Raumnummer
 			                if (data.text().contains("Raum")) {
@@ -92,8 +96,14 @@ public class InsertProfileData {
 								stmt.executeUpdate(sql_insert);
 								count_insert_office++;
 			                }
-			                //einfuegen Telefonnummer
-			                else if (data.text().contains("t +")) {
+			                
+			            }
+			            
+			            for (Element data : persPhone) {
+			            	String phone = "";
+			            	
+			            	//einfuegen Telefonnummer
+			                if (data.text().contains("+")) {
 			                	phone = data.text();
 			                	System.out.println(phone);
 			                	
@@ -101,12 +111,18 @@ public class InsertProfileData {
 								stmt.executeUpdate(sql_insert);
 								count_insert_phone++;
 			                }
+			                
 			            }
+			            
+			            System.out.println(personUrls.get(i));
+			            
+
+			            
 	            	}
 	            	catch (HttpStatusException ht) {
 	            		id++;
 	            		count_httperr++;
-	            		System.out.print("HTTP ERROR 404: " + personUrls.get(i) + "\n");
+	            		System.out.print("\nHTTP ERROR: " + personUrls.get(i));
 	            		continue;
 	            	}
 		            id++;
@@ -133,7 +149,12 @@ public class InsertProfileData {
 				} // end finally try
 			} // end try
 			
-			System.out.println("\n\nConnection closed.\n" 
+			
+			
+			
+			long timeNeeded = (System.currentTimeMillis() - timeBefore);
+			System.out.println("\n\n\n\nTotal time needed: " + timeNeeded + " ms");
+			System.out.println("Connection closed.\n" 
 			+ count_insert_office + " office numbers have been selected and inserted\n" 
 			+ count_insert_phone  + " phone numbers have been selected and inserted\n" 
 			+ "-------------------------------\n"
