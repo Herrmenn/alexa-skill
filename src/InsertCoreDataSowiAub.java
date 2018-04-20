@@ -38,26 +38,6 @@ public class InsertCoreDataSowiAub {
 												};
 
 	/*
-	 * PARSE METHOD
-	 */
-	private static String[] parse(String input) {
-
-		String[] parts = input.split("@");
-		String name = parts[0].replace(".", " ").toLowerCase();
-		String[] nameParts = name.split(" ");
-
-		if (nameParts.length == 1) {
-			String[] namePartsTemp = new String[2];
-			namePartsTemp[0] = " ";
-			namePartsTemp[1] = nameParts[0];
-
-			return namePartsTemp;
-		}
-
-		return nameParts;
-	}
-
-	/*
 	 * MAIN METHOD
 	 */
 	public static void main(String[] args) {
@@ -86,79 +66,63 @@ public class InsertCoreDataSowiAub {
 			try {
 
 				for (int i = 0; i < PERSON_ARCHIVES.length; i++) {
-					
+					String email ="";
+					String room = "";
+					String phone = "";
+					String url="";
 					long timeBeforePersons = System.currentTimeMillis();
-
-					// sql variables
-					ArrayList<String> urls = new ArrayList<>();
-					ArrayList<String> emails = new ArrayList<>();
-					ArrayList<String> firstnames = new ArrayList<>();
-					ArrayList<String> lastnames = new ArrayList<>();
-					ArrayList<String> roomnumbers = new ArrayList<>();
-					ArrayList<String> phonenumbers = new ArrayList<>();
 
 					// Persons
 					Document persArchive = Jsoup.connect(PERSON_ARCHIVES[i]).get();
-
-					Elements persEmail = persArchive.select("div.kontakt-table div a:not(.marron_u)");
-					Elements persUrl = persArchive.select("div.linkToPerson a, a.external-link, a.internal-link, span.internal-link");
-					Elements persRoom = persArchive.select("div.kontakt-table div");
-					// get all urls
-					for (Element url : persUrl) {
-						System.out.println(url);
-						if (url.absUrl("href").contains("http")){
-							//System.out.println(url.absUrl("href").toLowerCase());
-							urls.add(url.absUrl("href").toLowerCase());
+					
+					Elements infoBlocks = persArchive.select("div.kontaktdaten");
+					for (Element block: infoBlocks) {
+						Elements mailElements = block.select("[href^=mailto]");
+						if (mailElements.isEmpty()) {
+							email = null;
+						} else {
+							email = mailElements.first().attr("href").substring(7);
+							System.out.println(email);
 						}
-						else if(!url.absUrl("href").contains("http") && url.outerHtml().contains("<span class=\"internal-link\">Weitere Informationen</span>")){
-							//System.out.println(url.text());
-							urls.add("Keine URL");
-							//System.out.println("Keine URL");
-						}
-					}
 
-					// get all emails + names
-					for (Element email : persEmail) {
-						if (email.text().contains("@") || email.text().contains(".de")) {
-							String split[] = email.text().split("@");
-							if(split[0].contains(".")) {
-							emails.add(email.text().toLowerCase());
-							//System.out.println(email.text().toLowerCase());
-							String[] name = parse(email.text());
-
-							firstnames.add(name[0]);
-							lastnames.add(name[1]);
+						Elements rooms = block.select("div:containsOwn(Raum)");
+						//Elements phone = block.select(":contains(+)");
+						for (Element roomT: rooms)
+							room = roomT.text();
+						System.out.println(room);
+						
+						Elements phones = block.select("span:containsOwn(+)");
+						for (Element phoneT: phones)
+							phone = phoneT.text();
+						System.out.println(phone);
+						
+						// Weitere Infos suchen
+						List<Element> nextSiblings = block.siblingElements().subList(
+							block.elementSiblingIndex(),
+							block.siblingElements().size()
+						);
+						
+						Element moreInfo = null;
+						for (Element el: nextSiblings) {
+							if (el.is("div.kontaktdaten")) {
+								// Nächhster Kontaktdatenblock erreicht
+								break;
+							} else if (!el.select("a").isEmpty()) {
+								// Mehr Informationen Block gefunden
+								moreInfo = el;
+								break;
 							}
 						}
-					}
-					int counter = 0;
-					for (Element room : persRoom) {
-						if (counter < 9 && room.text().contains("Raum")) {
-							roomnumbers.add(room.text());
-						//	System.out.println(room.text());	
-							counter = 0;
+						
+						if (moreInfo == null) {
+							System.out.println("Keine weiteren Infos");
+						} else {
+							url= moreInfo.select("a").first().attr("href");
+							System.out.println(url+"\n");
 						}
-						else if(counter >= 9){
-							roomnumbers.add("Kein Raum");
-						//	System.out.println("ADD");
-							counter = 0;
-						}
-						else {
-							counter++;
-							//System.out.println("Kein Raum");
-						}
+					Person p = new Person(email, url, room, phone);
+					stmt.executeUpdate(p.toSql());
 					}
-					
-					// print needed time
-					long timeNeededPersons = (System.currentTimeMillis() - timeBeforePersons);
-					System.out.println("Time needed: " + timeNeededPersons + " ms - " + emails.size() + " Emails - " + urls.size() + " Urls - " + roomnumbers.size()+ " Raumnummern - ("+ persArchive.title() + ")");
-
-					for (int j = 0; j < urls.size(); j++) {
-						String sql = "INSERT INTO pers_core_data VALUES (NULL, '" + firstnames.get(j) + "', '"+ lastnames.get(j) + "', '" + emails.get(j) + "', '" + urls.get(j) + "', 'NULL', 'NULL')";
-						stmt.executeUpdate(sql);
-						count++;
-					}
-					
 				}
 
 			} catch (IOException e) {
