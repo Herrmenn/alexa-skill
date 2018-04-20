@@ -66,35 +66,33 @@ public class InsertCoreDataSowiAub {
 			try {
 
 				for (int i = 0; i < PERSON_ARCHIVES.length; i++) {
-					String email ="";
-					String room = "";
-					String phone = "";
-					String url="";
 					long timeBeforePersons = System.currentTimeMillis();
 
 					// Persons
 					Document persArchive = Jsoup.connect(PERSON_ARCHIVES[i]).get();
 					
 					Elements infoBlocks = persArchive.select("div.kontaktdaten");
+				
 					for (Element block: infoBlocks) {
+						String email ="";
+						String room = "";
+						String phone = "";
+						String url="";
 						Elements mailElements = block.select("[href^=mailto]");
 						if (mailElements.isEmpty()) {
 							email = null;
 						} else {
 							email = mailElements.first().attr("href").substring(7);
-							System.out.println(email);
 						}
 
 						Elements rooms = block.select("div:containsOwn(Raum)");
 						//Elements phone = block.select(":contains(+)");
 						for (Element roomT: rooms)
 							room = roomT.text();
-						System.out.println(room);
 						
 						Elements phones = block.select("span:containsOwn(+)");
 						for (Element phoneT: phones)
 							phone = phoneT.text();
-						System.out.println(phone);
 						
 						// Weitere Infos suchen
 						List<Element> nextSiblings = block.siblingElements().subList(
@@ -115,13 +113,15 @@ public class InsertCoreDataSowiAub {
 						}
 						
 						if (moreInfo == null) {
-							System.out.println("Keine weiteren Infos");
+							url = "No URL available";
 						} else {
 							url= moreInfo.select("a").first().attr("href");
-							System.out.println(url+"\n");
+							if(PERSON_ARCHIVES[i].contains("professoren") || PERSON_ARCHIVES[i].contains("Mitarbeiter"))
+									url = PERSON_ARCHIVES[i] +"/"+ url;
 						}
 					Person p = new Person(email, url, room, phone);
 					stmt.executeUpdate(p.toSql());
+					count++;
 					}
 				}
 
@@ -132,7 +132,7 @@ public class InsertCoreDataSowiAub {
 			
 			// print needed time
 			long timeNeeded = (System.currentTimeMillis() - timeBefore);
-			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms");
+			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms - "+ count + " additional people added(Sowi)");
 			
 
 		} catch (SQLException se) {
