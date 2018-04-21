@@ -35,6 +35,15 @@ public class InsertCoreDataSowiAub {
 	static final String[] PERSON_ARCHIVES =   { "https://www.htwsaar.de/sowi/fakultaet/personen/index_2014.html",
 												"https://www.htwsaar.de/sowi/fakultaet/personen/professoren",
 												"https://www.htwsaar.de/sowi/fakultaet/personen/Wissenschaftliche-Mitarbeiterinnen-und-Mitarbeiter",
+												"https://www.htwsaar.de/aub/fakultaet/dekanat", 
+												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/mitarbeiter/index_2014.html",
+												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/mitarbeiter-innen-1", 
+												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/dozenten/index_2014.html",
+											//	"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/dozenten-1", // seite ist anders aufgebaut
+												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/professoren",//url funzt nicht
+											//	"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/professorinnen-und-professoren", //funzt noch nicht
+											//	"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/akademische-mitarbeiter/copy_of_akademische_mitarbeiter",
+											//	"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/akademische-mitarbeiter-innen",
 												};
 
 	/*
@@ -66,18 +75,19 @@ public class InsertCoreDataSowiAub {
 			try {
 
 				for (int i = 0; i < PERSON_ARCHIVES.length; i++) {
-					long timeBeforePersons = System.currentTimeMillis();
 
 					// Persons
 					Document persArchive = Jsoup.connect(PERSON_ARCHIVES[i]).get();
 					
-					Elements infoBlocks = persArchive.select("div.kontaktdaten");
+					Elements infoBlocks = persArchive.select("div.kontaktdaten, div.adr_mp");
 				
 					for (Element block: infoBlocks) {
+						
 						String email ="";
 						String room = "";
 						String phone = "";
 						String url="";
+						
 						Elements mailElements = block.select("[href^=mailto]");
 						if (mailElements.isEmpty()) {
 							email = null;
@@ -90,11 +100,11 @@ public class InsertCoreDataSowiAub {
 						for (Element roomT: rooms)
 							room = roomT.text();
 						
-						Elements phones = block.select("span:containsOwn(+)");
+						Elements phones = block.select("span:containsOwn(+), span:containsOwn(0)");
 						for (Element phoneT: phones)
 							phone = phoneT.text();
 						
-						// Weitere Infos suchen
+						// Weitere Infos suchen 
 						List<Element> nextSiblings = block.siblingElements().subList(
 							block.elementSiblingIndex(),
 							block.siblingElements().size()
@@ -102,7 +112,7 @@ public class InsertCoreDataSowiAub {
 						
 						Element moreInfo = null;
 						for (Element el: nextSiblings) {
-							if (el.is("div.kontaktdaten")) {
+							if (el.is("div.kontaktdaten, div.memberprofil, span.marron_p")) {
 								// Nächhster Kontaktdatenblock erreicht
 								break;
 							} else if (!el.select("a").isEmpty()) {
@@ -132,7 +142,7 @@ public class InsertCoreDataSowiAub {
 			
 			// print needed time
 			long timeNeeded = (System.currentTimeMillis() - timeBefore);
-			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms - "+ count + " additional people added(Sowi)");
+			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms.");
 			
 
 		} catch (SQLException se) {

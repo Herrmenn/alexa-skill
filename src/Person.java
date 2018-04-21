@@ -48,24 +48,25 @@ public class Person {
 	}
 	
 	private void getName(String input) {
-
+		if(input.contains("@")) {
 			String[] parts = input.split("@");
 			String name = parts[0].replace(".", " ").toLowerCase();
 			String[] nameParts = name.split(" ");
 
-			if (nameParts.length == 1) {
-				String[] namePartsTemp = new String[2];
-				namePartsTemp[0] = " ";
-				namePartsTemp[1] = nameParts[0];
-
-				this.firstname = namePartsTemp[0];
-				this.lastname = namePartsTemp[1];
+			if (nameParts.length == 1) {				
+				this.firstname = "";
+				this.lastname = nameParts[0];
 			}
 
 			else{
 				this.firstname = nameParts[0];
 				this.lastname = nameParts[1];
 			}
+		}
+		else {
+			this.firstname = "";
+			this.lastname = "";
+		}
 		}
 	
 	public String toSql() {
