@@ -16,9 +16,8 @@ import java.math.*; // for BigDecimal and BigInteger support
 
 /**
  * 
- * @author Herrmann, Morlo Uebernimmt Vorname, Nachname, E-Mail, URL aller
- *         Angestellten im Studienbereich Ingenieurwissenschaften, Wirtschaftswissenschaften in die
- *         Datenbank
+ * @author Herrmann
+ * uebernimmt semestertermine und schlieﬂtage von der htw webseite
  *
  */
 public class InsertDatesSemester {
@@ -48,52 +47,43 @@ public class InsertDatesSemester {
 		try {
 
 			// STEP 2: Register JDBC driver
-			//Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.jdbc.Driver");
 
 			// STEP 3: Open a connection
-			//System.out.println("Connecting to a selected database...");
-		//	conn = DriverManager.getConnection(DB_URL, USER, PASS);
-		//	System.out.println("Connected database successfully...");
+			System.out.println("Connecting to a selected database...");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			System.out.println("Connected database successfully...");
 
 			// STEP 4: Execute a query
-		//	System.out.println("Inserting records into the table...\n");
-		//	stmt = conn.createStatement();
+			System.out.println("Inserting records into the table...\n");
+			stmt = conn.createStatement();
 
 			// GET PERSONS FROM WEBSITE
 			try {
 
 
 					// Persons
-					Document persArchive = Jsoup.connect(SEMESTER_DATES_ARCHIVE).get();
+					Document semesterArchive = Jsoup.connect(SEMESTER_DATES_ARCHIVE).get();
 					
-					Elements infoBlocks = persArchive.select("table.listing");
+					Elements infoBlocks = semesterArchive.select("table.listing");
 				
+					
 					for (Element block: infoBlocks) {
 											
 						//Elements tableElements = block.children();
+						
+						String semester          = block.previousElementSibling().text();
 						String semester_start    = block.getElementsContainingOwnText("Beginn des").next().text();
 						String lectures_start    = block.getElementsContainingOwnText("Beginn der").next().text();
 						String lectures_end      = block.getElementsContainingOwnText("Ende der").next().text();
-						String semster_end       = block.getElementsContainingOwnText("Ende des").next().text();
+						String semester_end      = block.getElementsContainingOwnText("Ende des").next().text();
 						String lecture_free_time = block.getElementsContainingOwnText("Vorlesungsfreie").next().text();
-						String closing = "";
+						String closing  		 = block.select("td.linksbundig[align=center]").html();
 						
-						//List<Node> allSiblings = block.childNodes();
-						//System.out.println(allSiblings);
+						String sql = "INSERT INTO semester_dates VALUES (NULL, '"	+ semester + "', '"+ semester_start + "', '" + lectures_start + "', '" + lectures_end + "', '" + semester_end 
+																					+ "', '" + lecture_free_time + "', '"+ closing +"')";
 						
-						
-						// Weitere Infos suchen 
-					//	List<Element> nextSiblings = block.siblingElements().subList(
-					//		block.get,
-					//		block.siblingElements().size()
-					//	);
-					//System.out.println(nextSiblings);
-						System.out.println(block.nextElementSibling().getElementsContainingOwnText("Schlieﬂtage"));
-						//System.out.println(block.getElementsContainingOwnText("Schlieﬂtage").);
-						
-					//	System.out.println(block.getElementsContainingOwnText("Vorlesungsfreie Zeit").next().text());
-						System.out.println("\n");
-				//	stmt.executeUpdate(p.toSql());
+					stmt.executeUpdate(sql);
 					count++;
 					}
 
@@ -106,6 +96,10 @@ public class InsertDatesSemester {
 			long timeNeeded = (System.currentTimeMillis() - timeBefore);
 			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms.");
 			
+
+		} catch (SQLException se) {
+			// Handle errors for JDBC
+			se.printStackTrace();
 		} catch (Exception e) {
 			// Handle errors for Class.forName
 			e.printStackTrace();
@@ -123,7 +117,7 @@ public class InsertDatesSemester {
 				se.printStackTrace();
 			} // end finally try
 		} // end try
-		System.out.println("Connection closed.\n" + count + " entries have been inserted.");
+		System.out.println("Connection closed.\n" + count + " semester dates have been inserted.");
 
 	} // main
 
