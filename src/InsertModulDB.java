@@ -20,7 +20,7 @@ import java.math.*; // for BigDecimal and BigInteger support
  * uebernimmt semestertermine und schlieﬂtage von der htw webseite
  *
  */
-public class InsertDatesSemester {
+public class InsertModulDB {
 
 	// JDBC driver name and database URL
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -31,7 +31,7 @@ public class InsertDatesSemester {
 	static final String PASS = "";
 
 	// Person Archive
-	static final String SEMESTER_DATES_ARCHIVE =  "https://www.htwsaar.de/studium/organisation/semestertermine";
+	static final String MODULDB_DATES_ARCHIVE =  "https://moduldb.htwsaar.de/";
 
 	/*
 	 * MAIN METHOD
@@ -47,43 +47,52 @@ public class InsertDatesSemester {
 		try {
 
 			// STEP 2: Register JDBC driver
-			Class.forName("com.mysql.jdbc.Driver");
+		//Class.forName("com.mysql.jdbc.Driver");
 
 			// STEP 3: Open a connection
-			System.out.println("Connecting to a selected database...");
+			//System.out.println("Connecting to a selected database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			System.out.println("Connected database successfully...");
+		//	System.out.println("Connected database successfully...");
 
 			// STEP 4: Execute a query
-			System.out.println("Inserting records into the table...\n");
-			stmt = conn.createStatement();
+		//	System.out.println("Inserting records into the table...\n");
+		//	stmt = conn.createStatement();
 
 			// GET PERSONS FROM WEBSITE
 			try {
 
 
 					// Persons
-					Document semesterArchive = Jsoup.connect(SEMESTER_DATES_ARCHIVE).get();
+					Document semesterArchive = Jsoup.connect(MODULDB_DATES_ARCHIVE).get();
 					
-					Elements infoBlocks = semesterArchive.select("table.listing");
+					Elements infoBlocks = semesterArchive.select("table.pretty-table");
 				
 					
 					for (Element block: infoBlocks) {
 											
 						//Elements tableElements = block.children();
+					
+						Elements linksDB = block.select("tr").next();
+						Elements linkser = linksDB.select("[href$=lang=de]");
+			
+						String courseOfStudiesName = linksDB.select("[href$=lang=de]").html();
+						String courseOfStudiesUrl ="" ;
+						System.out.println(courseOfStudiesName);
+						for (Element url : linkser) {
+							//System.out.println(url);
+							if (url.absUrl("href").contains("lang=de")) {
+								System.out.println(url.absUrl("href"));
+							}
+							if (url.toString() == "") {
+								System.out.println("KEINE URL");
+							}
+						}
 						
-						String semester          = block.previousElementSibling().text();
-						String semester_start    = block.getElementsContainingOwnText("Beginn des").next().text();
-						String lectures_start    = block.getElementsContainingOwnText("Beginn der").next().text();
-						String lectures_end      = block.getElementsContainingOwnText("Ende der").next().text();
-						String semester_end      = block.getElementsContainingOwnText("Ende des").next().text();
-						String lecture_free_time = block.getElementsContainingOwnText("Vorlesungsfreie").next().text();
-						String closing  		 = block.select("td.linksbundig[align=center]").html();
+					//	System.out.println(linksDB.select("[href$=lang=de]"));
+					//	String sql = "INSERT INTO semester_dates VALUES (NULL, '"	+ semester + "', '"+ semester_start + "', '" + lectures_start + "', '" + lectures_end + "', '" + semester_end 
+					//																+ "', '" + lecture_free_time + "', '"+ closing +"')";
 						
-						String sql = "INSERT INTO semester_dates VALUES (NULL, '"	+ semester + "', '"+ semester_start + "', '" + lectures_start + "', '" + lectures_end + "', '" + semester_end 
-																					+ "', '" + lecture_free_time + "', '"+ closing +"')";
-						
-					stmt.executeUpdate(sql);
+				//stmt.executeUpdate(sql);
 					count++;
 					}
 
@@ -116,7 +125,7 @@ public class InsertDatesSemester {
 				se.printStackTrace();
 			} // end finally try
 		} // end try
-		System.out.println("Connection closed.\n" + count + " semester dates have been inserted.");
+		System.out.println("Connection closed.\n" + count + " modules have been inserted.");
 
 	} // main
 
