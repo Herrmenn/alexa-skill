@@ -10,3 +10,36 @@ office varchar(255),
 phone varchar(255),
 PRIMARY KEY (id)
 );
+
+
+
+/* ---------------- */
+
+CREATE TABLE module_courses (
+id int NOT NULL AUTO_INCREMENT,
+course varchar(255),
+url varchar(255),
+PRIMARY KEY (id)
+);
+
+CREATE TABLE module_lectures (
+id int NOT NULL AUTO_INCREMENT,
+course_id int,
+lecture varchar(255),
+url varchar(255),
+PRIMARY KEY (id),
+FOREIGN KEY (course_id) REFERENCES module_courses(id)
+);
+
+CREATE TABLE module_info (
+id int NOT NULL AUTO_INCREMENT,
+lecture_id int,
+ects int,
+semester int,
+exam_type varchar(255),
+lecturer varchar(255),
+learning_goals varchar,
+content varchar,
+PRIMARY KEY (id),
+FOREIGN KEY (lecture_id) REFERENCES module_lectures(id)
+);
