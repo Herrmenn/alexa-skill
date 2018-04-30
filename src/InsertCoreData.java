@@ -22,14 +22,6 @@ import java.math.*; // for BigDecimal and BigInteger support
  */
 public class InsertCoreData {
 
-	// JDBC driver name and database URL
-	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://localhost/alexa";
-
-	// Database credentials
-	static final String USER = "root";
-	static final String PASS = "root";
-
 	// Person Archive
 	static final String[] PERSON_ARCHIVES =   { "https://www.htwsaar.de/ingwi/fakultaet/personen/personen-a-g",
 												"https://www.htwsaar.de/ingwi/fakultaet/personen/personen-h-n",
@@ -77,11 +69,11 @@ public class InsertCoreData {
 
 			// STEP 3: Open a connection
 			System.out.println("Connecting to a selected database...");
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			conn = DriverManager.getConnection(args[0], args[1], args[2]);
 			System.out.println("Connected database successfully...");
 
 			// STEP 4: Execute a query
-			System.out.println("Inserting records into the table...\n");
+			System.out.println("Inserting Core Data of persons into the table...\n");
 			stmt = conn.createStatement();
 
 			// GET PERSONS FROM WEBSITE

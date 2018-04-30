@@ -22,14 +22,6 @@ import java.math.*; // for BigDecimal and BigInteger support
  */
 public class InsertDatesSemester {
 
-	// JDBC driver name and database URL
-	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://localhost/alexa";
-
-	// Database credentials
-	static final String USER = "root";
-	static final String PASS = "";
-
 	// Person Archive
 	static final String SEMESTER_DATES_ARCHIVE =  "https://www.htwsaar.de/studium/organisation/semestertermine";
 
@@ -51,11 +43,11 @@ public class InsertDatesSemester {
 
 			// STEP 3: Open a connection
 			System.out.println("Connecting to a selected database...");
-			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+			conn = DriverManager.getConnection(args[0], args[1], args[2]);
 			System.out.println("Connected database successfully...");
 
 			// STEP 4: Execute a query
-			System.out.println("Inserting records into the table...\n");
+			System.out.println("Inserting Semester Dates into the table");
 			stmt = conn.createStatement();
 
 			// GET PERSONS FROM WEBSITE
@@ -93,7 +85,7 @@ public class InsertDatesSemester {
 					
 			// print needed time
 			long timeNeeded = (System.currentTimeMillis() - timeBefore);
-			System.out.println("\n\nTotal time needed: " + timeNeeded + " ms.");
+			System.out.println("\nTotal time needed: " + timeNeeded + " ms.");
 			
 
 		} catch (SQLException se) {
@@ -116,7 +108,7 @@ public class InsertDatesSemester {
 				se.printStackTrace();
 			} // end finally try
 		} // end try
-		System.out.println("Connection closed.\n" + count + " semester dates have been inserted.");
+		System.out.println("Connection closed.\n" + count + " semester dates have been inserted.\n\n");
 
 	} // main
 

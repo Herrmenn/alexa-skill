@@ -4,8 +4,6 @@ import org.jsoup.*;
 import org.jsoup.helper.*;
 import org.jsoup.internal.*;
 import org.jsoup.nodes.*;
-import org.jsoup.parser.*;
-import org.jsoup.safety.*;
 import org.jsoup.select.*;
 
 import java.sql.*; // for standard JDBC programs
@@ -16,18 +14,9 @@ import java.math.*; // for BigDecimal and BigInteger support
 
 
 public class InsertProfileData {
-
-		// JDBC driver name and database URL
-		static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-		static final String DB_URL = "jdbc:mysql://localhost/alexa";
-
-		// Database credentials
-		static final String USER = "root";
-		static final String PASS = "root";
 		
 		static int count_select = 0;
 		static int count_insert = 0;
-
 
 		/*
 		 * MAIN METHOD
@@ -52,7 +41,7 @@ public class InsertProfileData {
 
 				// STEP 3: Open a connection
 				System.out.println("Connecting to a selected database...");
-				conn = DriverManager.getConnection(DB_URL, USER, PASS);
+				conn = DriverManager.getConnection(args[0], args[1], args[2]);
 				System.out.println("Connected database successfully...");
 
 				// Person Profile Urls
@@ -74,6 +63,8 @@ public class InsertProfileData {
 				}
 				rs.close();
 				
+				System.out.println("Inserting Profile Data of selected persons...");
+				
 
 				for (int i = 0; i < personUrls.size() ; i++) {		
 		            try {
@@ -82,7 +73,6 @@ public class InsertProfileData {
 						Elements persOffice = persProfile.select("div.kontakt-table div");
 						Elements persPhone = persProfile.select("div.kontakt-table div span");
 						
-						System.out.println("\n");
 	
 			            for (Element data : persOffice) {
 			            	String office = "";
@@ -90,7 +80,6 @@ public class InsertProfileData {
 			            	//einfuegen Raumnummer
 			                if (data.text().contains("Raum")) {
 			                	office = data.text();
-			                	System.out.println(office);
 			                	
 			                	String sql_insert = "UPDATE pers_core_data SET office='" + office + "' WHERE id ='" + id + "'";
 								stmt.executeUpdate(sql_insert);
@@ -105,7 +94,6 @@ public class InsertProfileData {
 			            	//einfuegen Telefonnummer
 			                if (data.text().contains("+")) {
 			                	phone = data.text();
-			                	System.out.println(phone);
 			                	
 			                	String sql_insert = "UPDATE pers_core_data SET phone='" + phone + "' WHERE id ='" + id + "'";
 								stmt.executeUpdate(sql_insert);
@@ -114,15 +102,12 @@ public class InsertProfileData {
 			                
 			            }
 			            
-			            System.out.println(personUrls.get(i));
-			            
-
+			            System.out.println("loading...");
 			            
 	            	}
 	            	catch (HttpStatusException ht) {
 	            		id++;
 	            		count_httperr++;
-	            		System.out.print("\nHTTP ERROR: " + personUrls.get(i));
 	            		continue;
 	            	}
 		            id++;
