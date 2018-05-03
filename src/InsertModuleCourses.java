@@ -1,17 +1,12 @@
 import java.io.IOException;
 
 import org.jsoup.*;
-import org.jsoup.helper.*;
-import org.jsoup.internal.*;
 import org.jsoup.nodes.*;
-import org.jsoup.parser.*;
-import org.jsoup.safety.*;
 import org.jsoup.select.*;
 
 import java.sql.*;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.math.*;
 
 
 
@@ -42,24 +37,26 @@ public class InsertModuleCourses {
 		Statement stmt = null;
 		int count = 0;
 
+		
 		try {
 
-			// STEP 2: Register JDBC driver
+			// JDBC Connection
 			Class.forName("com.mysql.jdbc.Driver");
-
-			// STEP 3: Open a connection
-			System.out.println("Connecting to a selected database...");
 			conn = DriverManager.getConnection(DB_URL, USER, PASS);
-			System.out.println("Connected database successfully...");
-
-			// STEP 4: Execute a query
-			System.out.println("Inserting records into the table...\n");
 			stmt = conn.createStatement();
+			
+			
+			// DELETE TABLE CONTENT
+			String sql = "DELETE FROM module_lectures WHERE id > 0;";
+			stmt.executeUpdate(sql);
+			
+			// SET AI TO 1
+			sql = "ALTER TABLE module_lectures AUTO_INCREMENT = 1";
+			stmt.executeUpdate(sql);
+			
+			
 
-			// GET PERSONS FROM WEBSITE
 			try {
-
-				long timeBeforePersons = System.currentTimeMillis();
 
 				// SQL variables
 				ArrayList<String> courses = new ArrayList<>();
@@ -79,7 +76,8 @@ public class InsertModuleCourses {
 							urls.add(course.absUrl("href").toLowerCase());
 						}
 					}
-					else {					
+					else {	
+						// only get newest course (no duplicates)
 						if (course.absUrl("href").contains("moduldb") && !(course.text().equals(courses.get(courses.size() - 1).toString()))) {
 							courses.add(course.text());
 							urls.add(course.absUrl("href").toLowerCase());
@@ -90,12 +88,10 @@ public class InsertModuleCourses {
 				}
 
 				
-				// print needed time
-				long timeNeededPersons = (System.currentTimeMillis() - timeBeforePersons);
-				System.out.println("Time needed: " + timeNeededPersons + " ms - " + courses.size() + " Courses - " + urls.size() + " Urls (" + moduleArchive.title() + ")");
-
+				
+				// insert 
 				for (int j = 0; j < urls.size(); j++) {
-					String sql = "INSERT INTO module_courses VALUES (NULL, '" + courses.get(j) + "', '"+ urls.get(j) + "')";
+					sql = "INSERT INTO module_courses VALUES (NULL, '" + courses.get(j) + "', '"+ urls.get(j) + "')";
 					stmt.executeUpdate(sql);
 					count++;
 				}
@@ -132,7 +128,7 @@ public class InsertModuleCourses {
 				se.printStackTrace();
 			} // end finally try
 		} // end try
-		System.out.println("Connection closed.\n" + count + " entries have been inserted.");
+		System.out.println(count + " entries have been inserted.");
 
 	} // main
 
