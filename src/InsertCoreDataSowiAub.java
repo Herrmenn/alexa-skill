@@ -18,10 +18,8 @@ import java.net.URL;
 
 /**
  * 
- * @author Herrmann, Morlo Uebernimmt Vorname, Nachname, E-Mail, URL aller
- *         Angestellten im Studienbereich Ingenieurwissenschaften, Wirtschaftswissenschaften in die
- *         Datenbank
- *
+ * @author
+ * 
  */
 public class InsertCoreDataSowiAub {
 
@@ -37,15 +35,15 @@ public class InsertCoreDataSowiAub {
 	static final String[] PERSON_ARCHIVES =   { "https://www.htwsaar.de/sowi/fakultaet/personen/index_2014.html",
 												"https://www.htwsaar.de/sowi/fakultaet/personen/professoren",
 												"https://www.htwsaar.de/sowi/fakultaet/personen/Wissenschaftliche-Mitarbeiterinnen-und-Mitarbeiter",
-												"https://www.htwsaar.de/aub/fakultaet/dekanat", 
+												"https://www.htwsaar.de/aub/fakultaet/dekanat",
 												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/mitarbeiter/index_2014.html",
 												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/mitarbeiter-innen-1", 
 												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/dozenten/index_2014.html",
-												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/dozenten-1", // seite ist anders aufgebaut
-												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/professoren",//url funzt nicht
-												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/professorinnen-und-professoren", //funzt noch nicht
-												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/akademische-mitarbeiter/copy_of_akademische_mitarbeiter",
-												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/akademische-mitarbeiter-innen",
+												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/dozenten-1",
+												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/professoren",
+												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/professorinnen-und-professoren",
+												"https://www.htwsaar.de/aub/fakultaet/personen/schule-fuer-architektur-saar/akademische-mitarbeiter/copy_of_akademische_mitarbeiter", 
+												"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/akademische-mitarbeiter-innen", 
 												};
 
 	/*
@@ -68,6 +66,7 @@ public class InsertCoreDataSowiAub {
 		
 		Element content = doc.selectFirst("div#content");
 		content.traverse(new NodeVisitor() {
+			
 			private String content = "";
 			private boolean captureContent = false;
 			
@@ -75,15 +74,16 @@ public class InsertCoreDataSowiAub {
 			public void head(Node node, int depth) {
 				if (node instanceof Element) {
 					Element el = (Element) node;
-					if (el.tagName() == "h2") {
+					if (el.tagName() == "h2" || el.tagName() == "strong") {
 						captureContent = true;
 						
 						if (content.trim() != "")
 							System.out.println(content + "\n");
 						content = "";
 					} else if (el.tagName() == "a" && captureContent) {
-						System.out.println(el.absUrl("href") + " ");
+						//System.out.println(el.absUrl("href") + " ");		
 					}
+					
 				} else if (node instanceof TextNode) {
 					data((TextNode) node);
 				}
@@ -97,7 +97,9 @@ public class InsertCoreDataSowiAub {
 			}
 
 			@Override
-			public void tail(Node arg0, int arg1) {}
+			public void tail(Node node, int depth) {
+				
+					}
 		});
 	}
 } // class
