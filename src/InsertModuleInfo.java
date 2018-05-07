@@ -22,7 +22,7 @@ public class InsertModuleInfo {
 		// Database credentials
 		String DB_URL = "jdbc:mysql://localhost/alexa"; // args[0]
 		String USER = "root"; // args[1]
-		String PASS = "root"; // args[2]
+		String PASS = ""; // args[2]
 
 		Connection conn = null;
 		Statement stmt = null;
@@ -75,8 +75,11 @@ public class InsertModuleInfo {
 					String learninggoals = "";
 					String content = "";
 					
+					count++;
+					
 					
 					System.out.println("\n\n" + lectureArchive.title() + " - " + url);
+					System.out.println("id: " + count);
 					
 					
 					for (Element row : trElements) {
@@ -118,7 +121,7 @@ public class InsertModuleInfo {
 					        if (m.find( )) {	
 					        	String result = m.group(0).replaceAll("<br>", "");
 					        	examtype = result.replaceAll(" ", "");
-					        	System.out.println("ExamType: " + examtype);
+					        	System.out.println("Prüfungsart: " + examtype);
 					        }
 							
 						}
@@ -130,6 +133,7 @@ public class InsertModuleInfo {
 					        if (m.find( )) {	
 					        	String result = m.group(0).replaceAll("<br>", "");
 					        	lecturer = result.replaceAll("\\[", "");
+					        	lecturer = lecturer.replaceAll("(<)[^&]*(>)", "");
 					        	System.out.println("Dozent: " + lecturer);
 					        }
 						}
