@@ -1,23 +1,19 @@
 import java.io.IOException;
 
 import org.jsoup.*;
-import org.jsoup.helper.*;
-import org.jsoup.internal.*;
 import org.jsoup.nodes.*;
-import org.jsoup.parser.*;
-import org.jsoup.safety.*;
 import org.jsoup.select.*;
 
 import java.sql.*; // for standard JDBC programs
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-import java.math.*; // for BigDecimal and BigInteger support
 
 /**
- * 
- * @author Herrmann
- * uebernimmt semestertermine und schlieﬂtage von der htw webseite
+ * <h1> Extracts specific semester Dates <h1>
+ * The InsertDatesSemester program implements an application that simply 
+ * extracts all semester dates of the given URL and insert these into a database.  
+ * @author Eric
+ * @version 1.0
+ * @since 11.08.18
  *
  */
 public class InsertDatesSemester {
@@ -49,8 +45,20 @@ public class InsertDatesSemester {
 			// STEP 4: Execute a query
 			System.out.println("Inserting Semester Dates into the table");
 			stmt = conn.createStatement();
-
-			// GET PERSONS FROM WEBSITE
+			
+			String createSemesterTable = "CREATE TABLE temp_semester_dates (\r\n" + 
+					"semester varchar(255),\r\n" + 
+					"semester_start varchar(50), \r\n" + 
+					"lectures_start varchar(50),\r\n" + 
+					"lectures_end varchar(50) ,\r\n" + 
+					"semester_end varchar(50) ,\r\n" + 
+					"lecture_free_time varchar(255),\r\n" + 
+					"closure_days varchar(255),\r\n" + 
+					"PRIMARY KEY (semester)\r\n" + 
+					");";
+			
+			stmt.executeUpdate(createSemesterTable);
+			
 			try {
 
 
@@ -62,7 +70,6 @@ public class InsertDatesSemester {
 					
 					for (Element block: infoBlocks) {
 											
-						//Elements tableElements = block.children();
 						
 						String semester          = block.previousElementSibling().text();
 						String semester_start    = block.getElementsContainingOwnText("Beginn des").next().text();
@@ -72,8 +79,9 @@ public class InsertDatesSemester {
 						String lecture_free_time = block.getElementsContainingOwnText("Vorlesungsfreie").next().text();
 						String closing  		 = block.select("td.linksbundig[align=center]").html();
 						
-						String sql = "INSERT INTO semester_dates VALUES (NULL, '"	+ semester + "', '"+ semester_start + "', '" + lectures_start + "', '" + lectures_end + "', '" + semester_end 
-																					+ "', '" + lecture_free_time + "', '"+ closing +"')";
+						String sql = "INSERT INTO temp_semester_dates VALUES ('"+ semester.toLowerCase() + "', '"+ semester_start.toLowerCase() + "', '" + lectures_start.toLowerCase() + "', '" + 
+																			lectures_end.toLowerCase() + "', '" + semester_end.toLowerCase() + "', '" + lecture_free_time.toLowerCase() 
+																			+ "', '"+ closing.toLowerCase() +"')";
 						
 					stmt.executeUpdate(sql);
 					count++;
@@ -83,6 +91,11 @@ public class InsertDatesSemester {
 				System.out.println(e);
 			}
 					
+			String dropTable = "DROP TABLE semester_dates;";
+			stmt.executeUpdate(dropTable);
+			
+			String alterTable = "ALTER TABLE temp_semester_dates RENAME TO semester_dates;";
+			stmt.executeUpdate(alterTable);
 			// print needed time
 			long timeNeeded = (System.currentTimeMillis() - timeBefore);
 			System.out.println("\nTotal time needed: " + timeNeeded + " ms.");

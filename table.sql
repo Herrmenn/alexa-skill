@@ -35,11 +35,11 @@ CREATE TABLE module_info (
 id int NOT NULL AUTO_INCREMENT,
 lecture_id int,
 ects int,
-semester int,
+semester varchar(25),
 exam_type varchar(255),
 lecturer varchar(255),
-learning_goals varchar,
-content varchar,
+learning_goals varchar(65535),
+content varchar(65535),
 PRIMARY KEY (id),
 FOREIGN KEY (lecture_id) REFERENCES module_lectures(id)
 );
