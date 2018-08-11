@@ -21,8 +21,18 @@ public class InsertDatesSemester {
 	// Person Archive
 	static final String SEMESTER_DATES_ARCHIVE =  "https://www.htwsaar.de/studium/organisation/semestertermine";
 
-	/*
-	 * MAIN METHOD
+	/**
+	 * Similar to the other classes: 
+	 * connects to DB; creates Table temp_semester_dates, extracts data from URL;
+	 * inserts dates into temp_semester_dates; drops table semester_dates;
+	 * alter table temp... to semester_dates
+	 *  @param semester current semester       
+	 *  @param semester_start start of semester
+	 *  @param lectures_start start of lectures
+	 *  @param lectures_end end of lectures     
+	 *  @param semester_end end of semester 
+	 *  @param lecture_free_time free time 
+	 *  @param closing closing days
 	 */
 	public static void main(String[] args) {
 		
@@ -45,7 +55,7 @@ public class InsertDatesSemester {
 			// STEP 4: Execute a query
 			System.out.println("Inserting Semester Dates into the table");
 			stmt = conn.createStatement();
-			
+			String dropIfExists = "DROP TABLE IF EXISTS temp_semester_dates;";
 			String createSemesterTable = "CREATE TABLE temp_semester_dates (\r\n" + 
 					"semester varchar(255),\r\n" + 
 					"semester_start varchar(50), \r\n" + 
@@ -56,7 +66,7 @@ public class InsertDatesSemester {
 					"closure_days varchar(255),\r\n" + 
 					"PRIMARY KEY (semester)\r\n" + 
 					");";
-			
+			stmt.executeUpdate(dropIfExists);
 			stmt.executeUpdate(createSemesterTable);
 			
 			try {
