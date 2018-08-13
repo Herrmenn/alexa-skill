@@ -78,8 +78,7 @@ public class InsertDatesSemester {
 					Elements infoBlocks = semesterArchive.select("table.listing");
 				
 					
-					for (Element block: infoBlocks) {
-											
+					for (Element block: infoBlocks) {						
 						
 						String semester          = block.previousElementSibling().text();
 						String semester_start    = block.getElementsContainingOwnText("Beginn des").next().text();

@@ -9,9 +9,13 @@ import java.util.ArrayList;
 
 /**
  * 
- * @author Herrmann, Morlo Uebernimmt Vorname, Nachname, E-Mail, URL aller
- *         Angestellten im Studienbereich Ingenieurwissenschaften,
- *         Wirtschaftswissenschaften in die Datenbank
+ * <h1> Extracts data of professors from the given Urls <h1>
+ * The InsertCoreDataSowiAub program implements an application that simply 
+ * extracts the different professors of the given Urls into a database.
+ * 
+ * @author Alex, Eric
+ * @version 1.0
+ * @since 11.08.18
  *
  */
 public class InsertCoreDataIngwiWiwi {
@@ -63,6 +67,7 @@ public class InsertCoreDataIngwiWiwi {
 			// STEP 4: Execute a query
 			System.out.println("Inserting Person Data into the table");
 			stmt = conn.createStatement();
+			String dropIfExists = "DROP TABLE IF EXISTS temp_mesa_plan;";
 
 			String createTable ="CREATE TABLE temp_person_data (\r\n" + 
 								"id int NOT NULL AUTO_INCREMENT,\r\n" + 
@@ -73,7 +78,7 @@ public class InsertCoreDataIngwiWiwi {
 								"phone varchar(255),\r\n" + 
 								"PRIMARY KEY (id)\r\n" + 
 								");";
-			
+			stmt.executeUpdate(dropIfExists);
 			stmt.executeUpdate(createTable);
 			
 			// GET PERSONS FROM WEBSITE

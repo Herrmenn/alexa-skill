@@ -11,9 +11,13 @@ import java.net.URL;
 
 /**
  * 
- * @author Herrmann, Morlo Uebernimmt Vorname, Nachname, E-Mail, URL aller
- *         Angestellten im Studienbereich Bauingeniurwesen,
- *         Sozialwissenschaften in die Datenbank
+ * <h1> Extracts data of professors from the given Urls <h1>
+ * The InsertCoreDataSowiAub program implements an application that simply 
+ * extracts the different professors of the given Urls into a database.
+ * 
+ * @author Eric
+ * @version 1.0
+ * @since 11.08.18
  *
  */
 
@@ -34,7 +38,7 @@ public class InsertCoreDataSowiAub {
 			"https://www.htwsaar.de/aub/fakultaet/personen/bauingenieurwesen%20Saar/akademische-mitarbeiter-innen", };
 
 	/*
-	 * MAIN METHOD
+	 *Main Method
 	 */
 	public static void main(String[] args) {
 		
@@ -82,6 +86,13 @@ public class InsertCoreDataSowiAub {
 		} // end try
 	}
 
+	/**
+	 * starts at a h2 or an strong tag(name of professor) and collects the specific information
+	 * of the professor adds this to an HashMap and continous till there is no data left,
+	 * selects the data which is now saved in the HashMap and writes it into database
+	 * @param url contains url
+	 * @param args contains db credentials
+	 */
 	private static void crawl(String url, String[] args) {
 		Document doc;
 		try {

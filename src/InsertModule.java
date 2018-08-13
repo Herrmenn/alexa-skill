@@ -13,17 +13,23 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 
-
+/**
+ * 
+ * <h1> Extracts data of modules <h1>
+ * The InsertModule program implements an application that simply 
+ * extracts the different modules of the given Urls into a database.
+ * 
+ * @author Alex
+ * @version 1.0
+ * @since 11.08.18
+ *
+ */
 
 
 public class InsertModule {
 	
 	
 	static final String MODULE_DB = "https://moduldb.htwsaar.de/cgi-bin/moduldb-index";
-	
-	
-	
-	
 	
 
 	public static void main(String[] args) {
@@ -53,11 +59,9 @@ public class InsertModule {
 
 			
 			
+			// Get all courses
 			int i = 0;
 			for (Element course : module) {
-				
-				//System.out.println("Course:" + course.text() + " - Institute " + i + ": " + moduleInstitute.get(i).toString());
-
 				
 				if (i == 0) {
 					if (course.absUrl("href").contains("moduldb")) {
@@ -83,6 +87,8 @@ public class InsertModule {
 			
 			
 			
+			
+			// Get all lectures from courses
 			for (String url : coursesURLs) {
 				
 				Document courseArchive = Jsoup.connect(url).get();
@@ -105,6 +111,9 @@ public class InsertModule {
 			System.out.println("\n\n");
 			
 			
+			
+			
+			
 			Connection conn = null;
 			Statement stmt = null;
 			
@@ -116,21 +125,25 @@ public class InsertModule {
 				conn = DriverManager.getConnection(args[0], args[1], args[2]);
 				stmt = conn.createStatement();
 				
+				// create temp table for new entries
 				String updateRoutine = "CREATE TABLE temp_moduledb ("+
-										"id int(11) NOT NULL AUTO_INCREMENT,"+
-										"module varchar(255) DEFAULT NULL,"+
-										"course varchar(255) DEFAULT NULL,"+
-										"ects varchar(5) DEFAULT NULL,"+
-										"semester varchar(5) DEFAULT NULL,"+
-										"exam_type varchar(255) DEFAULT NULL,"+
-										"lecturer varchar(255) DEFAULT NULL,"+
-										"learning_goals text,"+
-										"content text,"+
-										"PRIMARY KEY (id)"+
+											"id int(11) NOT NULL AUTO_INCREMENT,"+
+											"module varchar(255) DEFAULT NULL,"+
+											"course varchar(255) DEFAULT NULL,"+
+											"ects varchar(5) DEFAULT NULL,"+
+											"semester varchar(5) DEFAULT NULL,"+
+											"exam_type varchar(255) DEFAULT NULL,"+
+											"lecturer varchar(255) DEFAULT NULL,"+
+											"learning_goals text,"+
+											"content text,"+
+											"PRIMARY KEY (id)"+
 										");";
 
 				stmt.executeUpdate(updateRoutine);
 				
+				
+				
+				// Get information from lecture (module) site
 				int j = 0;
 				for (String url : lecturesURLs) {
 							
@@ -153,6 +166,11 @@ public class InsertModule {
 					System.out.println("Modulname: " + moduleName);
 					
 					
+					
+					/*
+					 * Collect information from table elements
+					 * and replace HTML tags
+					 */
 					for (Element row : trElements) {
 						
 						String row_text = row.text()
@@ -217,20 +235,12 @@ public class InsertModule {
 							
 						}
 						else if (row_text.contains("Dozent:")) {
-							//String pattern = "<br>.*\\[";
 							String pattern = "</b>.*\\[";
 					        Pattern r = Pattern.compile(pattern);
 					        Matcher m = r.matcher(row.toString());
 											
 					        if (m.find( )) {
 					        	String result = m.group(0).replaceAll("<br>", "");
-					        	/*
-					        	System.out.println("M: " + result);
-					        	lecturer = result.replaceAll("\\[", "");
-					        	System.out.println("M: " + lecturer);
-					        	lecturer = lecturer.replaceAll("(<)[^&]*(>)", "");
-					        	System.out.println("Dozent: " + lecturer);
-					        	*/
 					        	lecturer = Jsoup.parse(result).text();
 					        	lecturer = lecturer.replaceAll("\\[", "");
 					        	System.out.println("Dozent: " + lecturer);
@@ -242,8 +252,6 @@ public class InsertModule {
 					        Matcher m = r.matcher(row.toString());
 											
 					        if (m.find( )) {	
-					        	//String result = m.group(0).replaceAll("<br>", "");
-					        	//result = Jsoup.parse(result).text();
 					        	String result = Jsoup.parse(m.group(0)).text();
 					        	learninggoals = result.replaceAll("\\[", "");
 					        	System.out.println("Lernziele: " + learninggoals);
@@ -256,8 +264,6 @@ public class InsertModule {
 											
 					        if (m.find( )) {	
 					        	String result = Jsoup.parse(m.group(0)).text();
-					        	//String result = m.group(0).replaceAll("<br>", "");
-					        	//result = result.replaceAll("&nbsp;", " ");
 					        	content = result.replaceAll("\\[", "");
 					        	System.out.println("Inhalt: " + content + "\n\n");
 					        }
@@ -269,8 +275,19 @@ public class InsertModule {
 					
 					
 					
+				    // Replace I's in moduleName (e.g. Mathematik II)
+			        if (moduleName.matches("(.*)i$")) {
+			        	String iString = moduleName.substring(moduleName.lastIndexOf(" "));
+			        	System.out.println("iString" + iString);
+			        	
+			            int count = iString.length() - iString.replace("i", "").length();
+			            String newStr = moduleName.substring(0, moduleName.length() - count) + "" + count;
+			            System.out.println("Old String: " + moduleName + "\nNew String: " + newStr);
+			            moduleName = newStr;
+			        }
 					
-					//PreparedStatement ps = conn.prepareStatement();	
+					
+					// Insert entries into database
 					String insertTableSQL = "INSERT INTO temp_moduledb (module, course, ects, semester, exam_type, lecturer, learning_goals, content)" 
 					+ "VALUES (?,?,?,?,?,?,?,?)";
 					
@@ -284,20 +301,20 @@ public class InsertModule {
 					ps.setString(6, lecturer.toLowerCase());
 					ps.setString(7, learninggoals.toLowerCase());
 					ps.setString(8, content.toLowerCase());
-
-					// execute insert SQL stetement
 					ps.executeUpdate();
 					
 					j++;
 				}
 				
 				
-				
+				// Update Routine (switch tables)
 				String dropTable = "DROP TABLE moduledb;";
 				stmt.executeUpdate(dropTable);
 				
 				String alterTable = "ALTER TABLE temp_moduledb RENAME TO moduledb;";
 				stmt.executeUpdate(alterTable);
+				
+				
 				
 				long timeNeeded = (System.currentTimeMillis() - timeBefore);
 				System.out.println("\n\nTotal time needed: " + timeNeeded + " ms");

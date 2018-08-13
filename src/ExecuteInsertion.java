@@ -3,7 +3,7 @@
  * Executes selected classes by arguments. If there is no argument 
  * all classes will be executed.
  * 
- * @author Eric
+ * @author Eric, Alex
  * @version 1.0
  * @since 11.08.18
  *
