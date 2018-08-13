@@ -67,7 +67,7 @@ public class InsertCoreDataIngwiWiwi {
 			// STEP 4: Execute a query
 			System.out.println("Inserting Person Data into the table");
 			stmt = conn.createStatement();
-			String dropIfExists = "DROP TABLE IF EXISTS temp_mesa_plan;";
+			String dropIfExists = "DROP TABLE IF EXISTS temp_person_data;";
 
 			String createTable ="CREATE TABLE temp_person_data (\r\n" + 
 								"id int NOT NULL AUTO_INCREMENT,\r\n" + 
