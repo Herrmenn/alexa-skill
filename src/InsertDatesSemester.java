@@ -57,7 +57,7 @@ public class InsertDatesSemester {
 			stmt = conn.createStatement();
 			String dropIfExists = "DROP TABLE IF EXISTS temp_semester_dates;";
 			String createSemesterTable = "CREATE TABLE temp_semester_dates (\r\n" + 
-					"semester varchar(255),\r\n" + 
+					"semester varchar(100),\r\n" + 
 					"semester_start varchar(50), \r\n" + 
 					"lectures_start varchar(50),\r\n" + 
 					"lectures_end varchar(50) ,\r\n" + 

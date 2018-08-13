@@ -71,11 +71,11 @@ public class InsertCoreDataIngwiWiwi {
 
 			String createTable ="CREATE TABLE temp_person_data (\r\n" + 
 								"id int NOT NULL AUTO_INCREMENT,\r\n" + 
-								"name varchar(255) ,\r\n" + 
+								"name varchar(50) ,\r\n" + 
 								"email varchar(50),\r\n" + 
 								"url varchar(255) ,\r\n" + 
-								"office varchar(255) ,\r\n" + 
-								"phone varchar(255),\r\n" + 
+								"office varchar(100) ,\r\n" + 
+								"phone varchar(100),\r\n" + 
 								"PRIMARY KEY (id)\r\n" + 
 								");";
 			stmt.executeUpdate(dropIfExists);
