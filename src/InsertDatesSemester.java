@@ -10,7 +10,7 @@ import java.sql.Connection;
 /**
  * <h1> Extracts specific semester Dates <h1>
  * The InsertDatesSemester program implements an application that simply 
- * extracts all semester dates of the given URL and insert these into a database.  
+ * extracts all semester dates from the given URL and insert these into a database.  
  * @author Eric
  * @version 1.0
  * @since 11.08.18
@@ -72,7 +72,7 @@ public class InsertDatesSemester {
 			try {
 
 
-					// Persons
+					// People
 					Document semesterArchive = Jsoup.connect(SEMESTER_DATES_ARCHIVE).get();
 					
 					Elements infoBlocks = semesterArchive.select("table.listing");
@@ -105,7 +105,7 @@ public class InsertDatesSemester {
 			
 			String alterTable = "ALTER TABLE temp_semester_dates RENAME TO semester_dates;";
 			stmt.executeUpdate(alterTable);
-			// print needed time
+			// print time needed
 			long timeNeeded = (System.currentTimeMillis() - timeBefore);
 			System.out.println("\nTotal time needed: " + timeNeeded + " ms.");
 			
