@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * 
  * <h1> Extracts data of professors from the given Urls <h1>
  * The InsertCoreDataSowiAub program implements an application that simply 
- * extracts the different professors of the given Urls into a database.
+ * extracts the different professors from the given Urls into a database.
  * 
  * @author Alex, Eric
  * @version 1.0
@@ -81,7 +81,7 @@ public class InsertCoreDataIngwiWiwi {
 			stmt.executeUpdate(dropIfExists);
 			stmt.executeUpdate(createTable);
 			
-			// GET PERSONS FROM WEBSITE
+			// GET PEOPLE FROM WEBSITE
 
 			for (int i = 0; i < PERSON_ARCHIVES.length; i++) {
 
@@ -94,7 +94,7 @@ public class InsertCoreDataIngwiWiwi {
 				ArrayList<String> phones = new ArrayList<>();
 				ArrayList<String> offices = new ArrayList<>();
 
-				// Persons
+				// People
 				Document persArchive = Jsoup.connect(PERSON_ARCHIVES[i]).get();
 
 				Elements persUrl = persArchive.select("div.kurzprofil div a.marron_k");
@@ -167,7 +167,7 @@ public class InsertCoreDataIngwiWiwi {
 					}
 				}
 
-				// print needed time
+				// print time needed
 				long timeNeededPersons = (System.currentTimeMillis() - timeBeforePersons);
 				System.out.println("Time needed: " + timeNeededPersons + " ms - EMails - " + emails.size()
 						+ " Phones - " + phones.size() + " Office - " + offices.size() + " URL - " + urls.size() + " ("
