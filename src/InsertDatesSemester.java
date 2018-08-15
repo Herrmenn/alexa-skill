@@ -88,11 +88,26 @@ public class InsertDatesSemester {
 						String lecture_free_time = block.getElementsContainingOwnText("Vorlesungsfreie").next().text();
 						String closing  		 = block.select("td.linksbundig[align=center]").html();
 						
-						String sql = "INSERT INTO temp_semester_dates VALUES ('"+ semester.toLowerCase() + "', '"+ semester_start.toLowerCase() + "', '" + lectures_start.toLowerCase() + "', '" + 
-																			lectures_end.toLowerCase() + "', '" + semester_end.toLowerCase() + "', '" + lecture_free_time.toLowerCase() 
-																			+ "', '"+ closing.toLowerCase() +"')";
+						// Insert entries into database
+						String insertTableSQL = "INSERT INTO temp_semester_dates (semester, semester_start, lectures_start, lectures_end, semester_end, lecture_free_time, closure_days)" 
+						+ "VALUES (?,?,?,?,?,?,?)";
 						
-					stmt.executeUpdate(sql);
+						PreparedStatement ps = conn.prepareStatement(insertTableSQL);
+
+						ps.setString(1, semester.toLowerCase());
+						ps.setString(2, semester_start.toLowerCase());
+						ps.setString(3, lectures_start.toLowerCase());
+						ps.setString(4, lectures_end.toLowerCase());
+						ps.setString(5, semester_end.toLowerCase());
+						ps.setString(6, lecture_free_time.toLowerCase());
+						ps.setString(7, closing.toLowerCase());
+						ps.executeUpdate();
+						
+//						String sql = "INSERT INTO temp_semester_dates VALUES ('"+ semester.toLowerCase() + "', '"+ semester_start.toLowerCase() + "', '" + lectures_start.toLowerCase() + "', '" + 
+//																			lectures_end.toLowerCase() + "', '" + semester_end.toLowerCase() + "', '" + lecture_free_time.toLowerCase() 
+//																			+ "', '"+ closing.toLowerCase() +"')";
+						
+//					stmt.executeUpdate(sql);
 					count++;
 					}
 

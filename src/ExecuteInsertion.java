@@ -7,7 +7,20 @@
  * @version 1.0
  * @since 11.08.18
  *
-
+ */
+public class ExecuteInsertion {
+	// JDBC driver name and database URL
+	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+	
+//	static final String DB_URL = "jdbc:mysql://localhost/alexa";
+	// Database credentials for local sql 
+//	static final String USER = "root";
+//	static final String PASS = "";
+	
+	static final String USER = "insert_alexa";
+	static final String PASS = "!HTW_alexa18#Xgh98";
+	
+	static final String DB_URL = "jdbc:mysql://134.96.217.36/alexa";
 	
 	/**
 	 * MAIN METHOD

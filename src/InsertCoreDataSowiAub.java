@@ -219,12 +219,22 @@ public class InsertCoreDataSowiAub {
 				}
 				if (mail.trim().isEmpty() && urls.trim().isEmpty() && room.trim().isEmpty() && tel.trim().isEmpty()
 						|| name.trim().isEmpty()) {
-					// System.out.println("Nicht genuegend Informationen zum Anlegen einer
-					// relevanten Person");
+					// Nicht genuegend Informationen zum Anlegen einer relevanten Person
 				} else {
-					String sql = "INSERT INTO temp_person_data VALUES (NULL,'" + name + "', '" + mail + "', '" + urls
-							+ "', '" + room + "', '" + tel + "')";
-					stmt.executeUpdate(sql);
+					String insertTableSQL = "INSERT INTO temp_person_data (name, email, url, office, phone)" 
+							+ "VALUES (?,?,?,?,?)";
+							
+							PreparedStatement ps = conn.prepareStatement(insertTableSQL);
+
+							ps.setString(1, name);
+							ps.setString(2, mail);
+							ps.setString(3, urls);
+							ps.setString(4, room);
+							ps.setString(5, tel);
+							ps.executeUpdate();
+//					String sql = "INSERT INTO temp_person_data VALUES (NULL,'" + name + "', '" + mail + "', '" + urls
+//							+ "', '" + room + "', '" + tel + "')";
+//					stmt.executeUpdate(sql);
 					count++;
 				}
 			}

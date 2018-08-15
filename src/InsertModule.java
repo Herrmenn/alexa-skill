@@ -125,6 +125,8 @@ public class InsertModule {
 				conn = DriverManager.getConnection(args[0], args[1], args[2]);
 				stmt = conn.createStatement();
 				
+				String dropIfExists = "DROP TABLE IF EXISTS temp_moduledb;";
+				
 				// create temp table for new entries
 				String updateRoutine = "CREATE TABLE temp_moduledb ("+
 											"id int(11) NOT NULL AUTO_INCREMENT,"+
@@ -138,7 +140,7 @@ public class InsertModule {
 											"content text,"+
 											"PRIMARY KEY (id)"+
 										");";
-
+				stmt.executeUpdate(dropIfExists);
 				stmt.executeUpdate(updateRoutine);
 				
 				
@@ -292,7 +294,7 @@ public class InsertModule {
 					moduleName = moduleName.replace("2", "zwei");
 					moduleName = moduleName.replace("3", "drei");
 					moduleName = moduleName.replace("4", "vier");
-					moduleName = moduleName.replace("5", "fÃ¼nf");
+					moduleName = moduleName.replace("5", "fünf");
 					moduleName = moduleName.replace("6", "sechs");
 			        
 					

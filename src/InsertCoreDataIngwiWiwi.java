@@ -172,12 +172,23 @@ public class InsertCoreDataIngwiWiwi {
 				System.out.println("Time needed: " + timeNeededPersons + " ms - EMails - " + emails.size()
 						+ " Phones - " + phones.size() + " Office - " + offices.size() + " URL - " + urls.size() + " ("
 						+ persArchive.title() + ")");
-
+				
+				// Insert entries to database
 				for (int j = 0; j < urls.size(); j++) {
-					String sql = "INSERT INTO temp_person_data VALUES (NULL,'" + names.get(j).toLowerCase() + "', '"
-							+ emails.get(j).toLowerCase() + "', '" + urls.get(j).toLowerCase() + "', '"
-							+ offices.get(j).toLowerCase() + "', '" + phones.get(j).toLowerCase() + "')";
-					stmt.executeUpdate(sql);
+					String insertTableSQL = "INSERT INTO temp_person_data (name, email, url, office, phone)" 
+							+ "VALUES (?,?,?,?,?)";
+							
+							PreparedStatement ps = conn.prepareStatement(insertTableSQL);
+
+							ps.setString(1, names.get(j).toLowerCase());
+							ps.setString(2, emails.get(j).toLowerCase());
+							ps.setString(3, urls.get(j).toLowerCase());
+							ps.setString(4, offices.get(j).toLowerCase());
+							ps.setString(5, phones.get(j).toLowerCase());
+							ps.executeUpdate();
+//					String sql = "INSERT INTO temp_person_data VALUES (NULL,'" + names.get(j).toLowerCase() + "', '"
+//							+ emails.get(j).toLowerCase() + "', '" + urls.get(j).toLowerCase() + "', '"
+//							+ offices.get(j).toLowerCase() + "', '" + phones.get(j).toLowerCase() + "')";
 					count++;
 				}
 				
