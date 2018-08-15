@@ -276,7 +276,7 @@ public class InsertModule {
 					
 					
 					
-					
+					moduleName = moduleName.toLowerCase();
 				    // Replace I's in moduleName (e.g. Mathematik II)
 			        if (moduleName.matches("(.*)i$")) {
 			        	String iString = moduleName.substring(moduleName.lastIndexOf(" "));
