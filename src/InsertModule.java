@@ -221,7 +221,7 @@ public class InsertModule {
 					        }
 					        
 						}
-						else if (row_text.contains("Prüfungsart:")) {
+						else if (row_text.contains("PrÃ¼fungsart:")) {
 							
 							String pattern = "<br> [a-zA-z0-9]*";
 					        Pattern r = Pattern.compile(pattern);
@@ -230,7 +230,7 @@ public class InsertModule {
 					        if (m.find( )) {	
 					        	String result = m.group(0).replaceAll("<br>", "");
 					        	examtype = result.replaceAll(" ", "");
-					        	System.out.println("Prüfungsart: " + examtype);
+					        	System.out.println("PrÃ¼fungsart: " + examtype);
 					        }
 							
 						}
@@ -285,6 +285,16 @@ public class InsertModule {
 			            System.out.println("Old String: " + moduleName + "\nNew String: " + newStr);
 			            moduleName = newStr;
 			        }
+			        
+			        
+			        
+			        moduleName = moduleName.replace("1", "eins");
+					moduleName = moduleName.replace("2", "zwei");
+					moduleName = moduleName.replace("3", "drei");
+					moduleName = moduleName.replace("4", "vier");
+					moduleName = moduleName.replace("5", "fÃ¼nf");
+					moduleName = moduleName.replace("6", "sechs");
+			        
 					
 					
 					// Insert entries into database
