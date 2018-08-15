@@ -88,6 +88,9 @@ public class InsertDatesSemester {
 						String lecture_free_time = block.getElementsContainingOwnText("Vorlesungsfreie").next().text();
 						String closing  		 = block.select("td.linksbundig[align=center]").html();
 						
+						String [] temp = semester.split("/");
+						semester = temp[0];
+						
 						// Insert entries into database
 						String insertTableSQL = "INSERT INTO temp_semester_dates (semester, semester_start, lectures_start, lectures_end, semester_end, lecture_free_time, closure_days)" 
 						+ "VALUES (?,?,?,?,?,?,?)";
